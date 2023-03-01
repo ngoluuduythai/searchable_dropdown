@@ -162,6 +162,8 @@ class DropdownSearch<T> extends StatefulWidget {
   ///if the callBack return FALSE, the opening of the popup will be cancelled
   final BeforePopupOpeningMultiSelection<T>? onBeforePopupOpeningMultiSelection;
 
+  final double? customMenuWidth;
+  final Widget? customDropdownInputWidget;
   DropdownSearch({
     Key? key,
     this.onSaved,
@@ -181,6 +183,8 @@ class DropdownSearch<T> extends StatefulWidget {
     this.compareFn,
     this.onBeforeChange,
     this.onBeforePopupOpening,
+    this.customMenuWidth,
+    this.customDropdownInputWidget,
     PopupProps<T> popupProps = const PopupProps.menu(),
   })  : assert(
           !popupProps.showSelectedItems || T == String || compareFn != null,
@@ -216,6 +220,8 @@ class DropdownSearch<T> extends StatefulWidget {
     BeforePopupOpeningMultiSelection<T>? onBeforePopupOpening,
     FormFieldValidator<List<T>>? validator,
     DropdownSearchBuilderMultiSelection<T>? dropdownBuilder,
+    this.customMenuWidth,
+    this.customDropdownInputWidget,
   })  : assert(
           !popupProps.showSelectedItems || T == String || compareFn != null,
         ),
@@ -388,6 +394,9 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
         return ValueListenableBuilder<bool>(
             valueListenable: _isFocused,
             builder: (context, isFocused, w) {
+              if (widget.customDropdownInputWidget != null) {
+                return widget.customDropdownInputWidget!;
+              }
               return InputDecorator(
                 baseStyle: widget.dropdownDecoratorProps.baseStyle,
                 textAlign: widget.dropdownDecoratorProps.textAlign,
@@ -420,6 +429,9 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
         return ValueListenableBuilder<bool>(
             valueListenable: _isFocused,
             builder: (context, isFocused, w) {
+              if (widget.customDropdownInputWidget != null) {
+                return widget.customDropdownInputWidget!;
+              }
               return InputDecorator(
                 baseStyle: widget.dropdownDecoratorProps.baseStyle,
                 textAlign: widget.dropdownDecoratorProps.textAlign,
@@ -633,10 +645,13 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
 
           return Container(
             margin: EdgeInsets.only(
-              bottom: widget.popupProps.modalBottomSheetProps.padding?.bottom ?? viewInsetsBottom,
-              top: widget.popupProps.modalBottomSheetProps.padding?.top ?? viewPaddingTop,
+              bottom: widget.popupProps.modalBottomSheetProps.padding?.bottom ??
+                  viewInsetsBottom,
+              top: widget.popupProps.modalBottomSheetProps.padding?.top ??
+                  viewPaddingTop,
               left: widget.popupProps.modalBottomSheetProps.padding?.left ?? 0,
-              right: widget.popupProps.modalBottomSheetProps.padding?.right ?? 0,
+              right:
+                  widget.popupProps.modalBottomSheetProps.padding?.right ?? 0,
             ),
             child: _popupWidgetInstance(),
           );
@@ -657,6 +672,7 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
         popupButtonObject,
         overlay,
       ),
+      customWidth: widget.customMenuWidth,
       child: _popupWidgetInstance(),
     );
   }

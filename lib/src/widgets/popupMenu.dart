@@ -7,6 +7,7 @@ Future<T?> showCustomMenu<T>({
   required MenuProps menuModeProps,
   required RelativeRect position,
   required Widget child,
+  double? customWidth,
 }) {
   final NavigatorState navigator = Navigator.of(context);
   return navigator.push(
@@ -14,6 +15,7 @@ Future<T?> showCustomMenu<T>({
       context: context,
       position: position,
       child: child,
+      customWidth: customWidth,
       menuModeProps: menuModeProps,
       capturedThemes: InheritedTheme.capture(
         from: context,
@@ -28,10 +30,12 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
   // Rectangle of underlying button, relative to the overlay's dimensions.
   final RelativeRect position;
   final BuildContext context;
+  final double? customWidth;
 
   _PopupMenuRouteLayout(
     this.context,
     this.position,
+    this.customWidth,
   );
 
   @override
@@ -45,7 +49,8 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
     double maxHeight = constraints.minHeight - keyBoardHeight - totalSafeArea;
     return BoxConstraints.loose(
       Size(
-        parentRenderBox.size.width - position.right - position.left,
+        customWidth ??
+            parentRenderBox.size.width - position.right - position.left,
         maxHeight,
       ),
     );
@@ -84,14 +89,15 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
   final RelativeRect position;
   final Widget child;
   final CapturedThemes capturedThemes;
+  final double? customWidth;
 
-  _PopupMenuRoute({
-    required this.context,
-    required this.menuModeProps,
-    required this.position,
-    required this.capturedThemes,
-    required this.child,
-  });
+  _PopupMenuRoute(
+      {required this.context,
+      required this.menuModeProps,
+      required this.position,
+      required this.capturedThemes,
+      required this.child,
+      this.customWidth});
 
   @override
   Duration get transitionDuration => menuModeProps.animationDuration;
@@ -130,7 +136,7 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
     );
 
     return CustomSingleChildLayout(
-      delegate: _PopupMenuRouteLayout(context, position),
+      delegate: _PopupMenuRouteLayout(context, position, customWidth),
       child: capturedThemes.wrap(menu),
     );
   }
